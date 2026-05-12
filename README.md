@@ -1,89 +1,103 @@
 # hmz-paperclip-kpi-monitor
+> KPI monitoring — Google/Meta Ads metrics → Excel dashboard → alert on drop. Part of the DigiMinds Paperclip automation engine suite.
 
-> **Autonomous KPI health monitor | runs 6:00 PM daily | flags underperformance before HMZ sees it**
+[![paperclip](https://img.shields.io/badge/Paperclip-engine-blue?style=flat&labelColor=555)](https://github.com/paperclipai/paperclip)
+[![mae](https://img.shields.io/badge/MAE-powered-green?style=flat&labelColor=555)](.)
+[![tools](https://img.shields.io/badge/tools-Google-orange?style=flat&labelColor=555)](.)
+[![tier0](https://img.shields.io/badge/tier0-zero--cost-purple?style=flat&labelColor=555)](.)
+[![license](https://img.shields.io/badge/license-MIT-lightgrey?style=flat&labelColor=555)](LICENSE)
 
-[![schedule](https://img.shields.io/badge/schedule-6%3A00PM_daily-blue?style=flat)](.) [![kpis](https://img.shields.io/badge/KPIs-28_tracked-green?style=flat)](.) [![status](https://img.shields.io/badge/status-always_on-brightgreen?style=flat)](.) [![company](https://img.shields.io/badge/company-DigiMinds-orange?style=flat)](.)
-
-[Overview](#overview) · [KPIs Tracked](#kpis-tracked) · [Thresholds](#thresholds) · [Escalation](#escalation) · [Tips](#tips)
-
----
-
-## 🧠 OVERVIEW
-
-Paperclip KPI Monitor runs every evening at 6 PM and checks all 28 active DigiMinds KPI tasks against targets. It calculates variance, trend direction, and health status — then generates a daily scorecard. Critical KPIs below threshold trigger immediate CEO loop escalation.
-
-| Component | Value |
-|---|---|
-| Trigger | Daily 6:00 PM (LaunchAgent) |
-| KPIs tracked | 28 active KPI tasks |
-| Escalation threshold | >20% below target = CRITICAL |
-| Output | Daily scorecard → Paperclip API |
-| Model | Groq Llama 3 (zero Claude tokens) |
+[concepts](#concepts) · [architecture](#architecture) · [tips](#tips) · [startups](#startups) · [star](#star)
 
 ---
 
-## 📊 KPI CATEGORIES (28 TOTAL)
+## 🧠 CONCEPTS <a id="concepts"></a>
 
-| Category | KPIs | Key Metric |
+| Feature | Location | Description |
 |---|---|---|
-| Revenue | 5 | MRR, ARR, deal velocity, pipeline value |
-| Lead Generation | 6 | Leads/day, ICP score avg, conversion rate |
-| Content | 4 | Post reach, engagement rate, profile visits |
-| Client Delivery | 7 | ROAS delivered, client retention, NPS |
-| Operations | 6 | Agent uptime, task completion rate, cost/lead |
+| [**Core Engine**](engine/) | `engine/` | Main orchestration loop — reads from Paperclip → executes → reports back |
+| [**Paperclip Sync**](sync/) | `sync/` | Bidirectional sync with Paperclip API at localhost:3100 |
+| [**MAE Integration**](mae/) | `mae/` | Routes tasks through MAE swarm — wave-batched, RAM-safe |
+| [**Tier 0 Routing**](routing/) | `routing/` | Tools used: Google Ads API · Meta API · openpyxl |
+| [**Output Storage**](outputs/) | `outputs/` | Results saved to `~/.claude/tcc-logs/` + synced to Paperclip |
+| [**LaunchAgent**](launchagents/) | `launchagents/` | Optional persistent LaunchAgent — runs engine on schedule |
 
----
+### 🔥 Hot
 
-## 🎯 THRESHOLD SYSTEM
-
-| Status | Condition | Action |
+| Feature | Location | Description |
 |---|---|---|
-| 🟢 GREEN | Within 5% of target | No action |
-| 🟡 YELLOW | 5-20% below target | Note in scorecard |
-| 🔴 RED | >20% below target | CEO loop escalation |
-| ⚪ GREY | No data (missed tracking) | Flag data gap |
+| [**Zero-cost execution**](engine/) | `engine/` | All processing via Tier 0 models — Groq, Gemini, Kimi, Bytez |
+| [**Auto-retry**](engine/) | `engine/` | Failed tasks auto-retry with fallback model via TCC retry mechanism |
+| [**Paperclip goal sync**](sync/) | `sync/` | Reads outstanding goals from Paperclip every run cycle |
 
 ---
 
-## 💡 TIPS
+## ⚙️ ARCHITECTURE <a id="architecture"></a>
 
-■ **Monitoring (4)**
+```
+Paperclip CEO Layer (localhost:3100)
+         │
+         │ reads goals + tasks
+         ▼
+    Kpi Monitor Engine
+         │
+    MAE decompose
+         │
+    Tier 0 swarm (Google Ads API · Meta API · openpyxl)
+         │
+    synthesis + output
+         │
+         │ reports results
+         ▼
+Paperclip CEO Layer (updated goals)
+```
+
+| Phase | Model | Purpose |
+|---|---|---|
+| Decompose | Groq llama-3.1-8b-instant | Break goal into sub-tasks |
+| Execute | Google Ads API + more | Run specialist tasks |
+| Synthesize | Groq llama-3.3-70b-versatile | Merge outputs |
+| Report | Paperclip API | Update goal status |
+
+---
+
+## 💡 TIPS AND TRICKS (8) <a id="tips"></a>
+
+[engine-ops](#tips-ops) · [paperclip-integration](#tips-pc)
+
+<a id="tips-ops"></a>
+■ **Engine Operations (4)**
+
 | Tip | Source |
 |---|---|
-| Daily scorecard accessible at `/api/kpi/scorecard?date=today` | API ref |
-| RED KPIs auto-appear in next CEO loop cycle (within 6h) | CEO loop integration |
-| Historical trend at `/api/kpi/trend?kpi=mrr&days=30` | API ref |
-| GREY KPIs mean data pipeline broken — fix before day-end | Operations rule |
+| Start: `python3 engine/main.py` or load LaunchAgent for persistent operation | [hmzainjamil](https://github.com/hmzainjamil) |
+| `mae run "goal"` triggers this engine via TCC routing when keyword matches | [hmzainjamil](https://github.com/hmzainjamil) |
+| All outputs go to `~/.claude/tcc-logs/mae-TIMESTAMP.md` — searchable history | [hmzainjamil](https://github.com/hmzainjamil) |
+| `tcc watch` monitors engine task queue in real-time — see active/pending/done | [hmzainjamil](https://github.com/hmzainjamil) |
 
-■ **Thresholds (3)**
+<a id="tips-pc"></a>
+■ **Paperclip Integration (4)**
+
 | Tip | Source |
 |---|---|
-| Thresholds are recalibrated monthly as baselines change | KPI SOP |
-| Client delivery KPIs are weighted 3x over operational KPIs | Priority rules |
-| MRR is the master KPI — all others subordinate to revenue health | DigiMinds strategy |
+| Paperclip must be running: `cd ~/installed-repos/paperclip && pnpm dev` | [Paperclip AI](https://github.com/paperclipai) |
+| Company ID `c5066522-bacc-4a28-b700-6590cbe366ec` scopes all API calls to DigiMinds | [hmzainjamil](https://github.com/hmzainjamil) |
+| Engine falls back to `llm-burst` if Paperclip API returns 404 | [hmzainjamil](https://github.com/hmzainjamil) |
+| Set engine goals via Paperclip dashboard → engine picks up on next run cycle | [Paperclip AI](https://github.com/paperclipai) |
 
 ---
 
-## ☠️ TOOLS REPLACED
+## ☠️ STARTUPS / BUSINESSES <a id="startups"></a>
 
-| KPI Monitor | Replaced |
+| Feature | Replaced |
 |---|---|
-| Daily performance review | Manual spreadsheet check |
-| Underperformance detection | Discovering problems from clients |
-| Trend analysis | Monthly reviews (too late) |
-| Escalation routing | Hoping someone noticed |
+| **Autonomous engine loop** | [AutoGPT](https://autogpt.net), [AgentGPT](https://agentgpt.reworkd.ai), [BabyAGI](https://github.com/yoheinakajima/babyagi) |
+| **Paperclip company OS** | [Notion AI](https://notion.so), [Monday.com](https://monday.com), [Asana](https://asana.com) |
+| **Zero-cost Tier 0 execution** | [CrewAI Cloud](https://crewai.com), [LangSmith](https://smith.langchain.com) |
+| **MAE swarm synthesis** | [LangGraph](https://langgraph.com), [AutoGen](https://github.com/microsoft/autogen) |
 
 ---
 
-## ⚠️ GOTCHAS
+## Star History <a id="star"></a>
 
-| Issue | Fix |
-|---|---|
-| KPI shows GREY | Data source disconnected — check API connections |
-| All KPIs show RED same day | Likely data pipeline issue, not real decline |
-| Monitor ran but no scorecard | Check Paperclip API logs at port 3100 |
-| Thresholds seem wrong | Recalibrate via `/api/kpi/calibrate` |
-
----
-
-*Part of [DigiMinds AI Agency Stack](https://github.com/hmzainjamil) — Paperclip autonomous KPI monitoring*
+[![Star History Chart](https://api.star-history.com/svg?repos=hmzainjamil/hmz-paperclip-kpi-monitor&type=Date)](https://star-history.com/#hmzainjamil/hmz-paperclip-kpi-monitor&Date)
