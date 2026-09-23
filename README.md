@@ -2,53 +2,31 @@
 
 > KPI monitoring and anomaly-management workflow concept for tracking business metrics, identifying threshold breaches, and producing operator alerts.
 
-<p align="center">
-  <a href="https://github.com/hmzainjamil/hmz-paperclip-kpi-monitor">Repository</a> ·
-  <a href="https://github.com/hmzainjamil/hmz-paperclip-kpi-monitor/commits/main">Commits</a> ·
-  <a href="https://github.com/hmzainjamil/hmz-paperclip-kpi-monitor/issues">Issues</a>
-</p>
+<p align="center"><a href="https://github.com/hmzainjamil/hmz-paperclip-kpi-monitor">Repository</a> · <a href="https://github.com/hmzainjamil/hmz-paperclip-kpi-monitor/commits/main">Commits</a> · <a href="https://github.com/hmzainjamil/hmz-paperclip-kpi-monitor/issues">Issues</a></p>
 
-<p align="center">
-  <img alt="Visibility" src="https://img.shields.io/badge/visibility-public-blue">
-  <img alt="Lifecycle" src="https://img.shields.io/badge/lifecycle-active-success">
-  <img alt="Implementation" src="https://img.shields.io/badge/implementation-documentation%20prototype-lightgrey">
-</p>
+<p align="center"><img alt="Visibility" src="https://img.shields.io/badge/visibility-public-blue"> <img alt="Lifecycle" src="https://img.shields.io/badge/lifecycle-active-success"> <img alt="Documentation" src="https://img.shields.io/badge/documentation-deep%20editorial-lightgrey"></p>
+
+<!-- HMZ DEEP README v1 -->
 
 ## At a glance
 
 | Field | Current state |
 |---|---|
-| Repository | hmz-paperclip-kpi-monitor |
-| Visibility | Public |
+| Visibility | public |
 | Lifecycle | Active |
-| Current tree | README only |
-| Primary scope | KPI monitoring and alert workflow design |
-| Production implementation | Not demonstrated by the current tree |
-| External integrations | Not demonstrated by the current tree |
+| Repository size | 17 KB |
+| Default branch | main |
+| Evidence basis | Current repository documentation and source-visible material |
 
-## What this repository is
+## Why this exists
 
-This repository currently documents a KPI monitoring concept for an agentic operations stack.
+KPI monitoring and anomaly-management workflow concept for tracking business metrics, identifying threshold breaches, and producing operator alerts.
 
-The intended loop is:
+This README separates documented capabilities from measured evidence and avoids converting roadmap ideas or external assumptions into implementation claims.
 
-`metric source -> normalization -> baseline or threshold check -> anomaly decision -> alert -> operator review -> report`
+## Scope
 
-A production implementation should keep metric calculations, thresholds, and alert suppression deterministic. Language models can be used later for narrative summaries, anomaly explanations, or operator assistance.
-
-## Capability model
-
-| Capability | Evidence in current tree | Status |
-|---|---|---|
-| KPI monitoring concept | README | Documented |
-| Threshold alerting concept | README | Documented |
-| Anomaly detection concept | README | Documented |
-| Automated reporting concept | README | Documented |
-| Executable monitor | No implementation files | Not demonstrated |
-| Data connectors | No implementation files | Not demonstrated |
-| Alert integrations | No implementation files | Not demonstrated |
-| Tests and evaluation | No test files | Not demonstrated |
-| Production deployment | No deployment files | Not demonstrated |
+The repository documentation is the primary description available for this project. Verify implementation claims against the source tree and CI.
 
 ## Intended architecture
 
@@ -82,33 +60,21 @@ Report / action
 
 The monitor should keep an audit trail for each alert, including metric values, threshold or baseline used, timestamp, source, decision, and resulting action.
 
-## Design principles
+## Getting started
 
-### Deterministic first
+No verified installation procedure was available in the current README. Use the repository root, dependency manifests, and project docs as the source of truth.
 
-Metric calculations and policy thresholds should not depend on an LLM.
+## Usage
 
-### Explainable alerts
+No verified runtime command was available in the current README. Commands should be taken from executable entry points and package configuration.
 
-Every alert should identify the observed value, comparison basis, and reason it crossed the configured policy.
+## Configuration
 
-### Noise control
+Configuration should be taken from environment examples, package configuration, and runtime entry points. Secrets should never be committed.
 
-Future implementations should support cooldowns, deduplication, escalation, and acknowledgement state.
+## Validation and evidence
 
-### Human control
-
-High-impact actions should require explicit operator approval instead of being inferred from model output.
-
-## Suggested implementation path
-
-1. Define a metric schema and source contract.
-2. Add deterministic threshold and baseline evaluators.
-3. Store alert state and history.
-4. Add notification adapters.
-5. Add dashboard or operator views.
-6. Add replayable test fixtures and anomaly evaluation.
-7. Add optional model-assisted narrative summaries.
+No dedicated test or evaluation section was available in the current README. Performance, production readiness, and outcome claims are not asserted here.
 
 ## Security
 
@@ -116,7 +82,11 @@ Credentials should stay outside the repository. Incoming metric payloads should 
 
 ## Limitations
 
-The current repository is documentation-only. It does not currently contain the monitor, alerting runtime, dashboards, tests, or provider adapters implied by the concept.
+- Planned functionality is not presented as completed functionality.
+- Quantitative claims should be backed by reproducible repository evidence.
+- External provider behavior, limits, and pricing are not inferred from repository documentation.
+
+
 
 ## Maintainer
 
